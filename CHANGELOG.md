@@ -1,5 +1,21 @@
 # apiDoc Changelog
 
+### 0.26.0
+* Clean up useless CSS rule (#923)
+* Enable GitHub actions (#918 by @tommy87)
+* Send sample url request to url hosting the documentation when no sampleUrl is provided in config (#915 by @thealphadollar)
+
+### 0.25.0
+
+* Add programmatic usage to README (#898 by rigwild)
+* Fix page refresh on non ascii characters (#896)
+
+#### 0.24.0
+
+* Fix output when offline (#894) by @SecretAgentKen
+* Increase require.js timeout (#889) by @NicolasCARPi
+* Use Prism.js instead of deprecated prettify.js (#888) by @NicolasCARPi
+
 #### 0.23.0
 
 * Send sample request auto json body if body/json is not used but Content-Type application/json header is set (#862)

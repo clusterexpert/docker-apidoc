@@ -54,7 +54,7 @@ EOF
 (
 cat <<EOF
 @import url("$TEMPLATE/vendor/bootstrap.min.css");
-@import url("$TEMPLATE/vendor/prettify.css");
+@import url("$TEMPLATE/vendor/prism.css");
 @import url("$TEMPLATE/css/style.css");
 EOF
 ) > "$API_STYLE"
@@ -79,7 +79,7 @@ cat <<EOF
     locales: './locales/locale',
     lodash: './vendor/lodash.custom.min',
     pathToRegexp: './vendor/path-to-regexp/index',
-    prettify: './vendor/prettify/prettify',
+    prismjs: './vendor/prism',
     semver: './vendor/semver.min',
     utilsSampleRequest: './utils/send_sample_request',
     webfontloader: './vendor/webfontloader',
@@ -104,10 +104,12 @@ cat <<EOF
       deps: ['jquery', 'handlebars'],
       exports: 'Handlebars'
     },
-    prettify: {
-      exports: 'prettyPrint'
+    prismjs: {
+      exports: 'Prism'
     }
   },
+  urlArgs: 'v=' + (new Date()).getTime(),
+  waitSeconds: 150
 })
 EOF
 ) > "$RJS_CONFIG"

@@ -8,7 +8,7 @@ require.config({
         locales: './locales/locale',
         lodash: './vendor/lodash.custom.min',
         pathToRegexp: './vendor/path-to-regexp/index',
-        prettify: './vendor/prettify/prettify',
+        prismjs: './vendor/prism',
         semver: './vendor/semver.min',
         utilsSampleRequest: './utils/send_sample_request',
         webfontloader: './vendor/webfontloader',
@@ -30,12 +30,12 @@ require.config({
             deps: ['jquery', 'handlebars'],
             exports: 'Handlebars'
         },
-        prettify: {
-            exports: 'prettyPrint'
-        }
+        prismjs: {
+            exports: 'Prism'
+        },
     },
     urlArgs: 'v=' + (new Date()).getTime(),
-    waitSeconds: 15
+    waitSeconds: 150
 });
 
 require([
@@ -45,20 +45,24 @@ require([
     'handlebarsExtended',
     'apiProject',
     'apiData',
-    'prettify',
+    'prismjs',
     'utilsSampleRequest',
     'semver',
     'webfontloader',
     'bootstrap',
     'pathToRegexp',
     'list'
-], function($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sampleRequest, semver, WebFont) {
+], function($, _, locale, Handlebars, apiProject, apiData, Prism, sampleRequest, semver, WebFont) {
 
     // Load google web fonts.
     WebFont.load({
         active: function() {
             // Only init after fonts are loaded.
-            init($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sampleRequest, semver);
+            init($, _, locale, Handlebars, apiProject, apiData, Prism, sampleRequest, semver);
+        },
+        inactive: function() {
+            // Run init, even if loading fonts fails
+            init($, _, locale, Handlebars, apiProject, apiData, Prism, sampleRequest, semver);
         },
         google: {
             families: ['Source Code Pro', 'Source Sans Pro:n4,n6,n7']
@@ -66,7 +70,7 @@ require([
     });
 });
 
-function init($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sampleRequest, semver) {
+function init($, _, locale, Handlebars, apiProject, apiData, Prism, sampleRequest, semver) {
     var api = apiData.api;
 
     //
@@ -80,6 +84,11 @@ function init($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sample
     var templateProject        = Handlebars.compile( $('#template-project').html() );
     var templateSections       = Handlebars.compile( $('#template-sections').html() );
     var templateSidenav        = Handlebars.compile( $('#template-sidenav').html() );
+
+    //
+    // Default host url used if no sampleUrl is present in config
+    //
+    var baseURL = window.location.origin;
 
     //
     // apiProject defaults
@@ -358,6 +367,14 @@ function init($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sample
                     };
                 }
 
+                if (apiProject.sampleUrl == false) {
+                    fields.article.sampleRequest = [
+                        {
+                            "url": baseURL + fields.article.url
+                        }
+                    ];
+                }
+
                 // add prefix URL for endpoint unless it's already absolute
                 if (apiProject.url) {
                     if (fields.article.url.substr(0, 4).toLowerCase() !== 'http') {
@@ -523,6 +540,7 @@ function init($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sample
 
         // init modules
         sampleRequest.initDynamic();
+        Prism.highlightAll()
     }
     initDynamic();
 
@@ -532,9 +550,6 @@ function init($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sample
             $("." + hashVal.slice(1) + "-init").click();
         }
     }
-
-    // Pre- / Code-Format
-    prettyPrint();
 
     //
     // HTML-Template specific jQuery-Functions
@@ -614,7 +629,7 @@ function init($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sample
     // as these actions modify the content
     // and would make it jump to the wrong position or not jump at all.
     if (window.location.hash) {
-        var id = window.location.hash;
+        var id = decodeURI(window.location.hash);
         if ($(id).length > 0)
             $('html,body').animate({ scrollTop: parseInt($(id).offset().top) }, 0);
     }
@@ -904,4 +919,5 @@ function init($, _, locale, Handlebars, apiProject, apiData, prettyPrint, sample
         });
         return results;
     }
+    Prism.highlightAll()
 }
